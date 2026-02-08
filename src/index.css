@@ -57,8 +57,11 @@
   * {
     @apply border-border;
   }
+  html {
+    color-scheme: dark;
+  }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased dark;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }
