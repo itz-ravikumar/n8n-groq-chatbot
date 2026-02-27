@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 type Message = { role: "user" | "assistant"; content: string };
 
-const WEBHOOK_URL = "http://localhost:5678/webhook-test/chatapp";
+const WEBHOOK_URL = "http://localhost:5678/webhook/chatapp";
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -95,3 +95,4 @@ const Index = () => {
 };
 
 export default Index;
+
