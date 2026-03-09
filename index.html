@@ -1,21 +1,61 @@
-<!doctype html>
-<html lang="en" class="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Chat AI</title>
-    <meta name="description" content="A minimal chat UI connected to a webhook endpoint." />
-    <meta name="author" content="Simple Chat AI" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-content">
+                <h1 class="header-title">
+                    <span class="header-icon">💬</span>
+                    Simple Chat AI
+                </h1>
+                <p class="header-subtitle">Powered by Webhook</p>
+            </div>
+        </header>
 
-    <meta property="og:title" content="Simple Chat AI" />
-    <meta property="og:description" content="A minimal chat UI connected to a webhook endpoint." />
-    <meta property="og:type" content="website" />
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <!-- Messages Container -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <div class="welcome-icon">🤖</div>
+                    <h2>Welcome to Simple Chat AI</h2>
+                    <p>Send a message to start chatting with the assistant</p>
+                </div>
+            </div>
 
-    <meta name="twitter:card" content="summary_large_image" />
-  </head>
+            <!-- Input Area -->
+            <footer class="chat-footer">
+                <form id="chatForm" class="chat-input-form">
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="messageInput"
+                            class="message-input"
+                            placeholder="Type your message here..."
+                            autocomplete="off"
+                            required
+                        >
+                        <button type="submit" class="send-button" id="sendBtn">
+                            <span class="send-icon">📤</span>
+                            <span class="send-text">Send</span>
+                        </button>
+                    </div>
+                </form>
+                <p class="input-hint">Press Enter or click Send to send a message</p>
+            </footer>
+        </main>
+    </div>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
 </html>
