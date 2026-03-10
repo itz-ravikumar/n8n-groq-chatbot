@@ -49,11 +49,21 @@ A lightweight vanilla JavaScript chat interface that connects to your n8n **AI A
 
 ## Quick Start
 
-### 1. Get n8n Running
+⚡ **For fastest setup**, follow: **[INSTALLATION.md](docs/INSTALLATION.md)**
+
+### TL;DR (3 steps)
+
+1. **Import workflow** → Open n8n → Import `n8n-workflows/chatting-workflow.json`
+2. **Add Groq API key** → Get key from [console.groq.com](https://console.groq.com) → Add to n8n workflow
+3. **Start frontend** → `npx http-server -p 8000` → Open `http://localhost:8000`
+
+### Detailed Setup
+
+#### 1. Get n8n Running
 
 **Option A: Cloud (easiest)**
 - Go to [n8n.cloud](https://n8n.cloud)
-- Sign up and create a workflow
+- Sign up and create a new workflow
 
 **Option B: Local n8n**
 ```bash
@@ -62,123 +72,158 @@ n8n start
 # Visit: http://localhost:5678
 ```
 
-### 2. Set Up Backend Workflow
+#### 2. Import the Workflow
 
-Follow [n8n Workflow Setup](#n8n-workflow-setup) below ⬇️
+1. Open your n8n instance
+2. Click **Import Workflow**
+3. Upload: `n8n-workflows/chatting-workflow.json`
+4. Workflow includes:
+   - ✅ Webhook node (POST `/webhook/chatapp`)
+   - ✅ AI Agent node
+   - ✅ Groq Chat Model integration
+   - ✅ Response handler
 
-### 3. Start Frontend Server
+#### 3. Configure Credentials
+
+1. **Get Groq API Key**: https://console.groq.com
+2. In n8n workflow → **Groq Chat Model** node
+3. Click **Manage Credentials** → Add your API key
+4. Save and Publish workflow
+
+#### 4. Start Frontend Server
 
 ```bash
 # Python 3
 python -m http.server 8000
 
-# Or use npm
-npx http-server
+# Or Node.js
+npx http-server -p 8000
 
 # Then open: http://localhost:8000
 ```
 
-### 4. Connect to Your Webhook
+#### 5. Connect to Your Webhook
 
-Set the webhook URL in the app:
+Copy webhook URL from the Webhook node in n8n, then use:
 
 ```
-http://localhost:8000?webhook=http://localhost:5678/webhook/YOUR_WEBHOOK_PATH
+http://localhost:8000?webhook=YOUR_WEBHOOK_URL_HERE
 ```
 
-**Done! Start chatting!** 🚀
+**Done! Your AI chatbot is live!** 🚀
+
+For troubleshooting and detailed instructions, see **[INSTALLATION.md](docs/INSTALLATION.md)**.
+
 
 ---
 
 ## n8n Workflow Setup
 
-### Step 1: Create Webhook Node
+### Pre-Built Workflow Included ✅
 
-1. Open n8n editor
-2. Add **Webhook** node
-3. Configure:
-   - **HTTP Method**: POST
-   - **Authentication**: None (or add if needed)
-   - **Path**: `chatapp` (or your custom path)
-4. Copy the Webhook URL
+This project includes a **ready-to-import workflow**: `n8n-workflows/chatting-workflow.json`
 
-### Step 2: Add AI Agent Node
+**What's included:**
+- ✅ **Webhook Node** - Receives POST requests at `/webhook/chatapp`
+- ✅ **AI Agent Node** - Processes messages with structured output
+- ✅ **Groq Chat Model** - LLM powered by Groq API (fast & free tier available)
+- ✅ **Response Handler** - Sends formatted responses back to frontend
 
-1. Add **AI Agent** node (from Workflow section)
-2. Configure:
-   - **Chat Model**: Select your LLM (OpenAI, HuggingFace, etc.)
-   - **Memory**: Enable for conversation context
-   - **Tools**: Add if needed (Calculator, Web Search, etc.)
-3. Connect Webhook output to AI Agent
+### Import Workflow (Recommended)
 
-### Step 3: Extract Message from Webhook
+**Fastest way to get started:**
 
-**In the Webhook node → Output:**
-```javascript
-// Extract user message from request body
-const message = $json.body.message;
-```
+1. In n8n → Click **Workflows**
+2. Click **Import Workflow** button
+3. Select **Import from File**
+4. Choose `n8n-workflows/chatting-workflow.json`
+5. Click **Import**
+6. Add your Groq API credentials (see below)
+7. Click **Publish**
 
-**Or use a Function node:**
-```javascript
-return {
-  message: $json.body.message,
-  history: $json.body.history
-};
-```
+✅ **Live and ready!**
 
-### Step 4: Setup AI Agent Input
+### Manual Setup (Alternative)
 
-Map the message to AI Agent:
-```
-- Input: {{ $node["Webhook"].json.body.message }}
-- History: {{ $node["Webhook"].json.body.history }}
-```
+If you prefer to create manually or need customization:
 
-### Step 5: Respond to Webhook
+1. **Create Webhook Node**
+   - HTTP Method: POST
+   - Path: `chatapp`
+   - Response Mode: Using "Respond to Webhook" node
 
-1. Add **Respond to Webhook** node
-2. Configure Response:
-   - **Body**: 
+2. **Add AI Agent Node**
+   - Prompt Type: Define
+   - Input: `{{ $json.body.message }}`
+   - System Message: See [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
+3. **Add Groq Chat Model**
+   - Model: `gpt-oss-20b` (recommended)
+   - Add Groq API credentials
+
+4. **Add Respond to Webhook Node**
+   - Response Body:
    ```json
    {
-     "message": "{{ $node[\"AI Agent\"].json.output }}"
+     "text": "{{ $node[\"AI Agent\"].json.output }}"
    }
    ```
 
-### Step 6: Publish Workflow
+5. **Connect nodes** and **Publish**
 
-Click **Publish** button (blue "Publish" button in top right)
+### Adding Groq API Key
 
-✅ **Your workflow is now live!**
+**Get your free API key:**
+1. Visit https://console.groq.com
+2. Sign up or login
+3. Create API key
+4. Copy the key
+
+**Add to n8n:**
+1. In workflow → Click **Groq Chat Model** node
+2. Click **Manage Credentials**
+3. Click **Create New Credential**
+4. Select **Groq API**
+5. Paste your API key
+6. Save
+
+### Get Your Webhook URL
+
+After publishing:
+1. Open the **Webhook** node
+2. Copy the **Webhook URL** (e.g., `https://n8n.instace/webhook/k4PnWqeHL7q5_eIXkP3Qh`)
+3. Use this in frontend configuration
+
+For more details, see: **[INSTALLATION.md](docs/INSTALLATION.md)** → Step 3
 
 ---
 
 ## Connect Frontend to Webhook
 
-### Get Your Webhook URL
+Your frontend needs to know where to send messages. There are 3 ways to provide the webhook URL:
 
-In n8n workflow:
-1. Click on **Webhook** node
-2. Copy the URL from "Webhook URL" field
-3. It looks like:
-```
-https://your-n8n-instance.com/webhook/k4PnWqeHL7q5_eIXkP3Qh
-```
-
-### Method 1: Query Parameter (Easy for Testing)
+### Method 1: Query Parameter (Easy - Recommended)
 
 ```
-http://localhost:8000?webhook=https://your-n8n-instance.com/webhook/YOUR_PATH
+http://localhost:8000?webhook=https://your-n8n-server.com/webhook/chatapp
+```
+
+**Pros:** No code changes, perfect for different environments  
+**Example:**
+```
+http://localhost:8000?webhook=http://localhost:5678/webhook/k4PnWqeHL7q5_eIXkP3Qh
 ```
 
 ### Method 2: Edit app.js
 
-In [app.js](app.js) line 12:
+In [app.js](app.js) around line 12:
 
 ```javascript
 const CONFIG = {
-    WEBHOOK_URL: 'https://your-n8n-instance.com/webhook/YOUR_PATH',
+    WEBHOOK_URL: (() => {
+        const urlParam = new URLSearchParams(window.location.search).get('webhook');
+        return urlParam || 'https://YOUR_WEBHOOK_URL_HERE';  // ← Change this
+    })(),
     // ...
 };
 ```
@@ -186,18 +231,33 @@ const CONFIG = {
 ### Method 3: Browser Console
 
 ```javascript
-chatUtils.setWebhookUrl('https://your-n8n-instance.com/webhook/YOUR_PATH')
+// Open browser console (F12 → Console tab)
+chatUtils.setWebhookUrl('https://your-n8n-instance.com/webhook/chatapp')
 ```
 
-**Test the connection:**
+### Testing the Connection
+
+**In browser console (F12):**
 ```javascript
-// Open browser console (F12)
+// Test webhook
 fetch(chatUtils.getWebhookUrl(), {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({message: 'test', history: []})
+    body: JSON.stringify({
+        message: 'test message',
+        history: []
+    })
 }).then(r => r.json()).then(console.log)
 ```
+
+**Should return:**
+```json
+{
+  "text": "AI Agent response..."
+}
+```
+
+For detailed API documentation, see: **[API.md](docs/API.md)**
 
 ---
 
@@ -427,46 +487,102 @@ chatUtils.exportMessagesCSV()
 
 ```
 simple-chat-ai/
-├── index.html          # Chat UI
-├── style.css           # Styling
-├── app.js              # Frontend logic
-├── public/             # Static assets
-├── README.md           # This file
-└── .git/               # Version control
+├── index.html                          # Chat UI
+├── style.css                           # Styling
+├── app.js                              # Frontend logic
+├── public/                             # Static assets
+│   └── robots.txt
+├── n8n-workflows/                      # 🎯 BACKEND WORKFLOWS
+│   └── chatting-workflow.json          # n8n AI Agent workflow
+├── docs/                               # 📚 DOCUMENTATION
+│   ├── INSTALLATION.md                 # Step-by-step setup guide
+│   ├── ARCHITECTURE.md                 # System design & flow
+│   └── API.md                          # API reference
+├── screenshots/                        # 📸 Project media
+├── README.md                           # This file
+└── .git/                               # Version control
 ```
+
+## Documentation
+
+**Get started quickly:**
+1. **[INSTALLATION.md](docs/INSTALLATION.md)** - Complete setup guide with prerequisites
+2. **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System design, data flow, and deployment
+3. **[API.md](docs/API.md)** - Webhook endpoint documentation and examples
+
+**Key Files:**
+- **[chatting-workflow.json](n8n-workflows/chatting-workflow.json)** - Your n8n backend workflow
+  - Ready to import into n8n
+  - Pre-configured AI Agent with Groq API
+  - Webhook endpoint: `/chatapp`
 
 ---
 
 ## Deployment
 
-### Deploy Frontend to GitHub Pages
-
-```bash
-git add .
-git commit -m "Deploy chat UI"
-git push origin main
-# Visit: github.com/itz-ravikumar/simple-chat-ai
-```
-
 ### Deploy n8n Workflow
 
-**Cloud n8n:** Already deployed on n8n.cloud ✅
+**Option A: Cloud n8n (Easiest)**
+- Sign up at [n8n.cloud](https://n8n.cloud)
+- Import the workflow from `n8n-workflows/chatting-workflow.json`
+- Publish → Your webhook is live
+- Update `app.js` with your n8n cloud webhook URL
 
-**Self-hosted n8n:**
+**Option B: Self-hosted n8n with Docker**
 ```bash
-# Docker
 docker run -it --rm -p 5678:5678 n8nio/n8n
+```
 
-# Or npm
+**Option C: Self-hosted n8n with npm**
+```bash
 npm install -g n8n
 n8n start
 ```
 
-### Deploy Frontend to Vercel/Netlify
+Then import workflow and note the webhook URL.
 
+### Deploy Frontend
+
+**Option 1: GitHub Pages (Free)**
+```bash
+git add .
+git commit -m "Deploy chat UI"
+git push origin main
+# Visit: github.com/YOUR_USERNAME/simple-chat-ai
+```
+
+**Option 2: Vercel/Netlify (Recommended)**
 1. Push repository to GitHub
-2. Connect Vercel/Netlify
-3. Auto-deploy on push
+2. Connect to [Vercel](https://vercel.com) or [Netlify](https://netlify.com)
+3. Auto-deploys on every push
+
+**Option 3: Traditional Hosting**
+- Upload files to any web server
+- Update webhook URL for production
+- Ensure HTTP server serves `index.html` correctly
+
+### Production Configuration
+
+**Update webhook URL for production:**
+
+**Before deployment:**
+```javascript
+// Bad: localhost URL won't work in production
+return urlParam || 'http://localhost:5678/webhook/chatapp';
+```
+
+**Good: Use environment variable or query parameter**
+```javascript
+// Use query parameter: ?webhook=https://your-domain/webhook/path
+return urlParam || 'https://your-n8n-instance.com/webhook/chatapp';
+```
+
+**Or use environment variable in build:**
+```bash
+WEBHOOK_URL=https://your-n8n-instance.com/webhook/chatapp npm run build
+```
+
+For detailed deployment instructions, see: **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** → Deployment section
 
 ---
 

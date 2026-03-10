@@ -1,0 +1,139 @@
+{
+  "name": "Chatting",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        -16
+      ],
+      "id": "0433f174-7a61-42b1-9a75-56430fe48edc",
+      "name": "Webhook",
+      "webhookId": "2e13e83b-55a2-40ba-bc67-612a8b7f770a"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}\n\nAnswer requirements:\n- Use table if comparison is involved.\n- Use bullet points if explanation.\n- Use boxed final answer if calculation.\n- Keep answer structured.\n",
+        "options": {
+          "systemMessage": "You are a precise and structured AI assistant.\n\nAlways follow these rules:\n\n1. Give clear, direct answers.\n2. Use simple language.\n3. If the answer involves comparison, data, pros/cons, or categories → use a Markdown table.\n4. If explaining steps → use numbered steps.\n5. If listing ideas → use bullet points.\n6. If solving a math or coding problem → show steps and then provide a clearly separated final answer section.\n7. Highlight final answers using:\n   ✅ Final Answer:\n8. Never add unnecessary introduction or filler text.\n9. Keep responses clean and properly formatted in Markdown.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2924c0ed-c51f-4831-8a10-7fad8edc09f7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "7d3d04f0-b7ba-4468-98d9-75a0687d196c",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Fo0js0iu3qtgcEqu",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        0
+      ],
+      "id": "886181eb-4745-4396-9f5f-3128c31418ea",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -304,
+        272
+      ],
+      "id": "d3c91ad9-20ce-44a6-ac00-cdd5d066b460",
+      "name": "When chat message received",
+      "webhookId": "77e5a018-3f74-4dce-a2f6-0ee7b872f57b"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "d99a1e5e-9d81-4927-8543-a61718124d42",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "994ac41e62580ceae22518a4ba33ef4772838fe07af5e86b1696272e0e26918c"
+  },
+  "id": "K4PnWqeHL7q5_eIXkP3Qh",
+  "tags": []
+}
