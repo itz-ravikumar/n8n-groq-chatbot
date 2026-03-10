@@ -6,6 +6,14 @@ A lightweight vanilla JavaScript chat interface that connects to your n8n **AI A
 
 ---
 
+## n8n Workflow Visualization
+
+![n8n AI Chat Workflow](screenshots/n8n-workflow.png)
+
+*Pre-built workflow with Webhook → AI Agent → Groq Chat Model → Response*
+
+---
+
 ## Features
 
 ✨ **Perfect for n8n Workflows**
